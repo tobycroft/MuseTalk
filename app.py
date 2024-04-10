@@ -35,7 +35,7 @@ CheckpointsDir = os.path.join(ProjectDir, "checkpoints")
 
 def download_model():
     if not os.path.exists(CheckpointsDir):
-        os.path.makedirs()
+        os.makedirs(CheckpointsDir)
         print("Checkpoint Not Downloaded, start downloading...")
         tic = time.time()
         snapshot_download(
@@ -49,9 +49,9 @@ def download_model():
     else:
         print("Already download the model.")
 
-
+@spaces.GPU(duration=600)
 @torch.no_grad()
-def inference(audio_path,video_path,bbox_shift):
+def inference(audio_path,video_path,bbox_shift,progress=gr.Progress(track_tqdm=True)):
     args_dict={"result_dir":'./results', "fps":25, "batch_size":8, "output_vid_name":'', "use_saved_coord":False}#same with inferenece script
     args = Namespace(**args_dict)
 
@@ -152,6 +152,7 @@ def inference(audio_path,video_path,bbox_shift):
     os.remove("temp.mp4")
     shutil.rmtree(result_img_save_path)
     print(f"result is save to {output_vid_name}")
+    return output_vid_name
 
 download_model()  # for huggingface deployment.
 
@@ -177,7 +178,7 @@ def check_video(video):
 
 
     # Run the ffmpeg command to change the frame rate to 25fps
-    command = f"ffmpeg -i {video} -r 25 {output_video}"
+    command = f"ffmpeg -i {video} -r 25 {output_video}  -y"
     subprocess.run(command, shell=True, check=True)
     return output_video
 
