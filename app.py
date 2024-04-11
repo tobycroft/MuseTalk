@@ -70,7 +70,7 @@ def download_model():
         url = "https://drive.google.com/uc?id=154JgKpzCPW82qINcVieuPH3fZ2e0P812"
         os.makedirs(f"{CheckpointsDir}/face-parse-bisent/")
         file_path = f"{CheckpointsDir}/face-parse-bisent/79999_iter.pth"
-        gdown.download(url, output, quiet=False)
+        gdown.download(url, file_path, quiet=False)
         #resnet
         url = "https://download.pytorch.org/models/resnet18-5c106cde.pth"
         response = requests.get(url)
