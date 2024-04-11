@@ -25,6 +25,8 @@ from argparse import Namespace
 import shutil
 import gdown
 
+ProjectDir = os.path.abspath(os.path.dirname(__file__))
+CheckpointsDir = os.path.join(ProjectDir, "models")
 
 def download_model():
     if not os.path.exists(CheckpointsDir):
@@ -101,8 +103,7 @@ from musetalk.utils.utils import load_all_model
 
 
 
-ProjectDir = os.path.abspath(os.path.dirname(__file__))
-CheckpointsDir = os.path.join(ProjectDir, "checkpoints")
+
 
 
 @spaces.GPU(duration=600)
