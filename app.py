@@ -107,7 +107,7 @@ download_model()  # for huggingface deployment.
 
 
 from musetalk.utils.utils import get_file_type,get_video_fps,datagen
-from musetalk.utils.preprocessing import get_landmark_and_bbox,read_imgs,coord_placeholder
+from musetalk.utils.preprocessing import get_landmark_and_bbox,read_imgs,coord_placeholder,get_bbox_range
 from musetalk.utils.blending import get_image
 from musetalk.utils.utils import load_all_model
 
@@ -160,7 +160,7 @@ def inference(audio_path,video_path,bbox_shift,progress=gr.Progress(track_tqdm=T
         coord_list, frame_list = get_landmark_and_bbox(input_img_list, bbox_shift)
         with open(crop_coord_save_path, 'wb') as f:
             pickle.dump(coord_list, f)
-            
+    bbox_shift_text=get_bbox_range(input_img_list, bbox_shift)
     i = 0
     input_latent_list = []
     for bbox, frame in zip(coord_list, frame_list):
@@ -219,7 +219,7 @@ def inference(audio_path,video_path,bbox_shift,progress=gr.Progress(track_tqdm=T
     #os.remove("temp.mp4")
     shutil.rmtree(result_img_save_path)
     print(f"result is save to {output_vid_name}")
-    return output_vid_name
+    return output_vid_name,bbox_shift_text
 
 
 
@@ -278,7 +278,9 @@ with gr.Blocks(css=css) as demo:
         with gr.Column():
             audio = gr.Audio(label="Driven Audio",type="filepath")
             video = gr.Video(label="Reference Video",sources=['upload'])
-            bbox_shift = gr.Number(label="BBox_shift,[-9,9]", value=-1)
+            bbox_shift = gr.Number(label="BBox_shift value, px", value=0)
+            bbox_shift_scale = gr.Textbox(label="BBox_shift recommend value lower bound,The corresponding bbox range is generated after the initial result is generated. \n If the result is not good, it can be adjusted according to this reference value", value="",interactive=False)
+
             btn = gr.Button("Generate")
         out1 = gr.Video()
     
@@ -292,7 +294,7 @@ with gr.Blocks(css=css) as demo:
             video,
             bbox_shift,
         ],
-        outputs=out1,
+        outputs=[out1,bbox_shift_scale]
     )
 
 # Set the IP and port
