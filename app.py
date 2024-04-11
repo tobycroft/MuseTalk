@@ -46,16 +46,18 @@ def download_model():
             local_dir_use_symlinks=True,
         )
         # weight
+        os.makedirs(f"{CheckpointsDir}/sd-vae-ft-mse/")
         snapshot_download(
             repo_id="stabilityai/sd-vae-ft-mse",
-            local_dir=CheckpointsDir,
+            local_dir=CheckpointsDir+'/sd-vae-ft-mse',
             max_workers=8,
             local_dir_use_symlinks=True,
         )
         #dwpose
+        os.makedirs(f"{CheckpointsDir}/dwpose/")
         snapshot_download(
             repo_id="yzd-v/DWPose",
-            local_dir=CheckpointsDir,
+            local_dir=CheckpointsDir+'/dwpose',
             max_workers=8,
             local_dir_use_symlinks=True,
         )
