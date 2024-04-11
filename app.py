@@ -9,6 +9,7 @@ import sys
 import subprocess
 
 from huggingface_hub import snapshot_download
+import requests
 
 import argparse
 import os
@@ -21,17 +22,9 @@ import pickle
 from tqdm import tqdm
 import copy
 from argparse import Namespace
-
-from musetalk.utils.utils import get_file_type,get_video_fps,datagen
-from musetalk.utils.preprocessing import get_landmark_and_bbox,read_imgs,coord_placeholder
-from musetalk.utils.blending import get_image
-from musetalk.utils.utils import load_all_model
 import shutil
+import gdown
 
-
-
-ProjectDir = os.path.abspath(os.path.dirname(__file__))
-CheckpointsDir = os.path.join(ProjectDir, "checkpoints")
 
 def download_model():
     if not os.path.exists(CheckpointsDir):
@@ -44,10 +37,73 @@ def download_model():
             max_workers=8,
             local_dir_use_symlinks=True,
         )
+        # weight
+        snapshot_download(
+            repo_id="stabilityai/sd-vae-ft-mse",
+            local_dir=CheckpointsDir,
+            max_workers=8,
+            local_dir_use_symlinks=True,
+        )
+        #dwpose
+        snapshot_download(
+            repo_id="yzd-v/DWPose",
+            local_dir=CheckpointsDir,
+            max_workers=8,
+            local_dir_use_symlinks=True,
+        )
+        #vae
+        url = "https://openaipublic.azureedge.net/main/whisper/models/65147644a518d12f04e32d6f3b26facc3f8dd46e5390956a9424a650c0ce22b9/tiny.pt"
+        response = requests.get(url)
+        # 确保请求成功
+        if response.status_code == 200:
+            # 指定文件保存的位置
+            file_path = f"{CheckpointsDir}/whisper/tiny.pt"
+            os.makedirs(f"{CheckpointsDir}/whisper/")
+            # 将文件内容写入指定位置
+            with open(file_path, "wb") as f:
+                f.write(response.content)
+        else:
+            print(f"请求失败，状态码：{response.status_code}")
+        #gdown face parse
+        url = "https://drive.google.com/uc?id=154JgKpzCPW82qINcVieuPH3fZ2e0P812"
+        os.makedirs(f"{CheckpointsDir}/face-parse-bisent/")
+        file_path = f"{CheckpointsDir}/face-parse-bisent/79999_iter.pth"
+        gdown.download(url, output, quiet=False)
+        #resnet
+        url = "https://download.pytorch.org/models/resnet18-5c106cde.pth"
+        response = requests.get(url)
+        # 确保请求成功
+        if response.status_code == 200:
+            # 指定文件保存的位置
+            file_path = f"{CheckpointsDir}/face-parse-bisent/resnet18-5c106cde.pth"
+            # 将文件内容写入指定位置
+            with open(file_path, "wb") as f:
+                f.write(response.content)
+        else:
+            print(f"请求失败，状态码：{response.status_code}")
+
+
         toc = time.time()
+
         print(f"download cost {toc-tic} seconds")
     else:
         print("Already download the model.")
+
+
+
+download_model()  # for huggingface deployment.
+
+
+from musetalk.utils.utils import get_file_type,get_video_fps,datagen
+from musetalk.utils.preprocessing import get_landmark_and_bbox,read_imgs,coord_placeholder
+from musetalk.utils.blending import get_image
+from musetalk.utils.utils import load_all_model
+
+
+
+ProjectDir = os.path.abspath(os.path.dirname(__file__))
+CheckpointsDir = os.path.join(ProjectDir, "checkpoints")
+
 
 @spaces.GPU(duration=600)
 @torch.no_grad()
@@ -154,7 +210,6 @@ def inference(audio_path,video_path,bbox_shift,progress=gr.Progress(track_tqdm=T
     print(f"result is save to {output_vid_name}")
     return output_vid_name
 
-download_model()  # for huggingface deployment.
 
 
 # load model weights
