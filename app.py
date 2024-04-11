@@ -216,7 +216,7 @@ def inference(audio_path,video_path,bbox_shift,progress=gr.Progress(track_tqdm=T
     print(cmd_combine_audio)
     os.system(cmd_combine_audio)
 
-    os.remove("temp.mp4")
+    #os.remove("temp.mp4")
     shutil.rmtree(result_img_save_path)
     print(f"result is save to {output_vid_name}")
     return output_vid_name
