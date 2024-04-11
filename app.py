@@ -28,6 +28,12 @@ import gdown
 ProjectDir = os.path.abspath(os.path.dirname(__file__))
 CheckpointsDir = os.path.join(ProjectDir, "models")
 
+def print_directory_contents(path):
+    for child in os.listdir(path):
+        child_path = os.path.join(path, child)
+        if os.path.isdir(child_path):
+            print(child_path)
+
 def download_model():
     if not os.path.exists(CheckpointsDir):
         os.makedirs(CheckpointsDir)
@@ -88,6 +94,8 @@ def download_model():
         toc = time.time()
 
         print(f"download cost {toc-tic} seconds")
+        print_directory_contents(CheckpointsDir)
+
     else:
         print("Already download the model.")
 
