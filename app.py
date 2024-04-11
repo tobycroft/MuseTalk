@@ -119,7 +119,7 @@ from musetalk.utils.utils import load_all_model
 @spaces.GPU(duration=600)
 @torch.no_grad()
 def inference(audio_path,video_path,bbox_shift,progress=gr.Progress(track_tqdm=True)):
-    args_dict={"result_dir":'./results', "fps":25, "batch_size":8, "output_vid_name":'', "use_saved_coord":False}#same with inferenece script
+    args_dict={"result_dir":'./results/output', "fps":25, "batch_size":8, "output_vid_name":'', "use_saved_coord":False}#same with inferenece script
     args = Namespace(**args_dict)
 
     input_basename = os.path.basename(video_path).split('.')[0]
@@ -217,7 +217,7 @@ def inference(audio_path,video_path,bbox_shift,progress=gr.Progress(track_tqdm=T
     os.system(cmd_combine_audio)
 
     #os.remove("temp.mp4")
-    shutil.rmtree(result_img_save_path)
+    #shutil.rmtree(result_img_save_path)
     print(f"result is save to {output_vid_name}")
     return output_vid_name,bbox_shift_text
 
@@ -251,6 +251,7 @@ def check_video(video):
     command = f"ffmpeg -i {video} -r 25 {output_video}  -y"
     subprocess.run(command, shell=True, check=True)
     return output_video
+
 
 
 
