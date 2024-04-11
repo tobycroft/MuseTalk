@@ -239,15 +239,18 @@ def check_video(video):
     # Add the output prefix to the file name
     output_file_name = "outputxxx_" + file_name
 
+    os.makedirs('./results',exist_ok=True)
+    os.makedirs('./results/output',exist_ok=True)
+    os.makedirs('./results/input',exist_ok=True)
+
     # Combine the directory path and the new file name
-    output_video = os.path.join(dir_path, output_file_name)
+    output_video = os.path.join('./results/input', output_file_name)
 
 
     # Run the ffmpeg command to change the frame rate to 25fps
     command = f"ffmpeg -i {video} -r 25 {output_video}  -y"
     subprocess.run(command, shell=True, check=True)
     return output_video
-
 
 
 
