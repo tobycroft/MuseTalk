@@ -277,7 +277,7 @@ with gr.Blocks(css=css) as demo:
     with gr.Row():
         with gr.Column():
             audio = gr.Audio(label="Driven Audio",type="filepath")
-            video = gr.Video(label="Reference Video")
+            video = gr.Video(label="Reference Video",sources=['upload'])
             bbox_shift = gr.Number(label="BBox_shift,[-9,9]", value=-1)
             btn = gr.Button("Generate")
         out1 = gr.Video()
